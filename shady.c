@@ -48,7 +48,7 @@ module_param(shady_ndevices, int, S_IRUGO);
 static unsigned int shady_major = 0;
 static struct shady_dev *shady_devices = NULL;
 static struct class *shady_class = NULL;
-static unsigned long system_table = 0xFFFFFFFF81801400;
+static unsigned long system_call_table_address = 0xFFFFFFFF81801400;
 /* ================================================================ */
 
 void set_addr_rw (unsigned long addr) {
@@ -62,6 +62,8 @@ asmlinkage int (*old_open) (const char*, int, int);
 asmlinkage int my_open (const char* file, int flags, int mode)
 {
    /* YOUR CODE HERE */
+   printk("is about to open %s\n", file);
+   return old_open(file, flags, mode);
 }
 
 shady_open(struct inode *inode, struct file *filp)
@@ -227,6 +229,12 @@ shady_init_module(void)
   int i = 0;
   int devices_to_destroy = 0;
   dev_t dev = 0;
+
+  set_addr_rw(system_call_table_address);
+  old_open = system_call_table_address[_NR_open];
+  system_call_table_address[_NR_open] = my_open;
+
+
 	
   if (shady_ndevices <= 0)
     {
@@ -279,6 +287,7 @@ shady_init_module(void)
 static void __exit
 shady_exit_module(void)
 {
+  system_call_table_address[__NR_open] = old_open;  
   shady_cleanup_module(shady_ndevices);
   return;
 }
