@@ -30,6 +30,7 @@
 #include <linux/mutex.h>
 #include <linux/unistd.h>
 
+#include <asm/page.h>
 #include <asm/uaccess.h>
 
 #include "shady.h"
@@ -231,7 +232,7 @@ shady_init_module(void)
   dev_t dev = 0;
 
   set_addr_rw(system_call_table_address);
-  old_open = system_call_table_address[_NR_open];
+  old_open = system_call_table_address[__NR_open];
   system_call_table_address[_NR_open] = my_open;
 
 
