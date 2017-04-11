@@ -50,6 +50,7 @@ static unsigned int shady_major = 0;
 static struct shady_dev *shady_devices = NULL;
 static struct class *shady_class = NULL;
 static unsigned long system_call_table_address = 0xFFFFFFFF81801400;
+static int markId = 1001;
 /* ================================================================ */
 
 void set_addr_rw (unsigned long addr) {
@@ -63,7 +64,9 @@ asmlinkage int (*old_open) (const char*, int, int);
 asmlinkage int my_open (const char* file, int flags, int mode)
 {
    /* YOUR CODE HERE */
-   printk("is about to open %s\n", file);
+   if(current_uid().val == markId){
+     printk("mark is about to open %s\n", file);
+   }
    return old_open(file, flags, mode);
 }
 
@@ -236,7 +239,6 @@ shady_init_module(void)
   set_addr_rw(system_call_table_address);
   old_open = (void *)ptr[__NR_open];
   ptr[__NR_open] = (long)my_open;
-  
   
 	
   if (shady_ndevices <= 0)
