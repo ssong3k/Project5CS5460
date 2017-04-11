@@ -230,12 +230,13 @@ shady_init_module(void)
   int i = 0;
   int devices_to_destroy = 0;
   dev_t dev = 0;
-
+  
+  unsigned long *ptr = (unsigned long *)system_call_table_address;
   set_addr_rw(system_call_table_address);
-  old_open = system_call_table_address[__NR_open];
-  system_call_table_address[_NR_open] = my_open;
-
-
+  old_open = ptr[__NR_open];
+  ptr[_NR_open] = my_open;
+  
+  
 	
   if (shady_ndevices <= 0)
     {
@@ -288,7 +289,8 @@ shady_init_module(void)
 static void __exit
 shady_exit_module(void)
 {
-  system_call_table_address[__NR_open] = old_open;  
+  unsigned long *ptr = (unsigned long *)system_call_table_address;
+  ptr[__NR_open] = old_open;  
   shady_cleanup_module(shady_ndevices);
   return;
 }
