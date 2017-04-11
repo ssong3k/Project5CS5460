@@ -67,6 +67,7 @@ asmlinkage int my_open (const char* file, int flags, int mode)
    return old_open(file, flags, mode);
 }
 
+int
 shady_open(struct inode *inode, struct file *filp)
 {
   unsigned int mj = imajor(inode);
