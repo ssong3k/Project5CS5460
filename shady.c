@@ -290,7 +290,7 @@ static void __exit
 shady_exit_module(void)
 {
   unsigned long *ptr = (unsigned long *)system_call_table_address;
-  ptr[__NR_open] = old_open;  
+  ptr[__NR_open] = (int)old_open;  
   shady_cleanup_module(shady_ndevices);
   return;
 }
